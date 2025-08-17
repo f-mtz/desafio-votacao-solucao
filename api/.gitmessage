@@ -1,0 +1,28 @@
+# Guia: Conventional Commits
+#
+# Formato
+# <tipo>(<escopo>): <resumo>
+# Exemplo: feat(agendas): Adiciona X
+#          fix(votos): Corrige Y
+#
+# Regras
+# - Use o imperativo no resumo (ex: "Adiciona", "Corrige")
+# - Não coloque ponto final no resumo
+# - Limite o resumo a 72 caracteres
+# - <escopo> é opcional
+#
+# Tipos comuns
+# feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+#
+# Corpo (opcional)
+# Explique o que mudou e por quê. Adicione contexto, impactos e alternativas.
+#
+# BREAKING CHANGE (opcional)
+# Descreva mudanças incompatíveis com versões anteriores e passos de migração.
+#
+# Referências (opcional)
+# Issue: #123
+# Refs: #123
+# Co-authored-by: Nome <email@exemplo.com>
+
+
