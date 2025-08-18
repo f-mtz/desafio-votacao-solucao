@@ -1,5 +1,7 @@
 package sicredi.votacao.api.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,8 +19,11 @@ import java.util.Set;
 @RequestMapping("/teste-domain")
 public class DomainTestController {
 
+	private static final Logger log = LoggerFactory.getLogger(DomainTestController.class);
+
 	@GetMapping
 	public Agenda exemploVotacao() {
+		log.info("[DomainTestController] exemploVotacao");
 		Agenda agenda = new Agenda();
 		agenda.setId(1L);
 		agenda.setTitle("Assembleia Geral 2025");

@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +25,7 @@ import java.util.Map;
 public class AssociateController {
 
 	private final AssociateValidatorClient associateValidatorClient;
+	private static final Logger log = LoggerFactory.getLogger(AssociateController.class);
 
 	public AssociateController(AssociateValidatorClient associateValidatorClient) {
 		this.associateValidatorClient = associateValidatorClient;
@@ -40,11 +43,14 @@ public class AssociateController {
 	)
 	@GetMapping("/{associateId}/status")
 	public ResponseEntity<?> checkStatus(@PathVariable String associateId) {
+		log.info("Check status associateId={}", associateId);
 		AssociateStatus status = associateValidatorClient.checkAssociateStatus(associateId);
 		if (status == AssociateStatus.UNABLE_TO_VOTE) {
+			log.info("Associate UNABLE_TO_VOTE associateId={}", associateId);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ErrorStatusResponse("Associado não está apto a votar", HttpStatus.NOT_FOUND.value(), status.name()));
 		}
+		log.info("Associate ABLE_TO_VOTE associateId={}", associateId);
 		return ResponseEntity.ok(new StatusResponse(status.name()));
 	}
 
