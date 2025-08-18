@@ -12,6 +12,6 @@ public class HelloWorld {
 
     @GetMapping
     public String olaMundo() {
-        return "Olá mundo 6 !!!";
+        return "Olá mundo 10 !!!";
     }
 }
