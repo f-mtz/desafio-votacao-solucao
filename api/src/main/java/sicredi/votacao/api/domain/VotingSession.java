@@ -1,5 +1,6 @@
 package sicredi.votacao.api.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,7 +26,7 @@ public class VotingSession {
 	private LocalDateTime startTime;
 	private LocalDateTime endTime;
 
-	@OneToMany(mappedBy = "votingSession", cascade = jakarta.persistence.CascadeType.ALL)
+	@OneToMany(mappedBy = "votingSession", cascade = CascadeType.ALL)
 	private Set<Vote> votes = new HashSet<>();
 
 	public VotingSession() {

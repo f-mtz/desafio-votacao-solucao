@@ -1,5 +1,6 @@
 package sicredi.votacao.api.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -8,9 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
+@Table(name = "vote", uniqueConstraints = @UniqueConstraint(columnNames = {"session_id", "associate_id"}))
 public class Vote {
 
 	@Id
@@ -22,6 +26,7 @@ public class Vote {
 	private VotingSession votingSession;
 
 	@NotBlank
+	@Column(name = "associate_id", nullable = false)
 	private String associateId;
 
 	@Enumerated(EnumType.STRING)
