@@ -2,21 +2,20 @@ package sicredi.votacao.api.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sicredi.votacao.api.integration.AssociateStatus;
 import sicredi.votacao.api.integration.AssociateValidatorClient;
-import sicredi.votacao.api.service.exception.ApiException;
+import sicredi.votacao.api.domain.exception.ApiException;
 import org.springframework.http.HttpStatus;
 
 @Service
 public class AssociateValidatorService {
 
 	private static final Logger log = LoggerFactory.getLogger(AssociateValidatorService.class);
-	private final AssociateValidatorClient associateValidatorClient;
+	@Autowired
+	private AssociateValidatorClient associateValidatorClient;
 
-	public AssociateValidatorService(AssociateValidatorClient associateValidatorClient) {
-		this.associateValidatorClient = associateValidatorClient;
-	}
 
 	public void validateAssociateOrThrow(String associateId) {
 		AssociateStatus status = associateValidatorClient.checkAssociateStatus(associateId);
