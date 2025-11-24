@@ -1,5 +1,6 @@
 package sicredi.votacao.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,9 +13,17 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "vote", uniqueConstraints = @UniqueConstraint(columnNames = {"session_id", "associate_id"}))
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Vote {
 
 	@Id
@@ -23,6 +32,7 @@ public class Vote {
 
 	@ManyToOne
 	@JoinColumn(name = "session_id")
+	@JsonBackReference("session-votes")
 	private VotingSession votingSession;
 
 	@NotBlank
@@ -32,47 +42,6 @@ public class Vote {
 	@Enumerated(EnumType.STRING)
 	private VoteType voteType;
 
-	public Vote() {
-	}
-
-	public Vote(Long id, VotingSession votingSession, String associateId, VoteType voteType) {
-		this.id = id;
-		this.votingSession = votingSession;
-		this.associateId = associateId;
-		this.voteType = voteType;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public VotingSession getVotingSession() {
-		return votingSession;
-	}
-
-	public void setVotingSession(VotingSession votingSession) {
-		this.votingSession = votingSession;
-	}
-
-	public String getAssociateId() {
-		return associateId;
-	}
-
-	public void setAssociateId(String associateId) {
-		this.associateId = associateId;
-	}
-
-	public VoteType getVoteType() {
-		return voteType;
-	}
-
-	public void setVoteType(VoteType voteType) {
-		this.voteType = voteType;
-	}
 }
 
 

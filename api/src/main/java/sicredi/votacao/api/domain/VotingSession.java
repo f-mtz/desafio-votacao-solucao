@@ -1,5 +1,7 @@
 package sicredi.votacao.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +13,15 @@ import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 @Entity
 public class VotingSession {
 
@@ -21,63 +31,17 @@ public class VotingSession {
 
 	@OneToOne
 	@JoinColumn(name = "agenda_id")
+	@JsonBackReference("agenda-session")
 	private Agenda agenda;
 
 	private LocalDateTime startTime;
 	private LocalDateTime endTime;
 
 	@OneToMany(mappedBy = "votingSession", cascade = CascadeType.ALL)
+	@JsonManagedReference("session-votes")
 	private Set<Vote> votes = new HashSet<>();
 
-	public VotingSession() {
-	}
 
-	public VotingSession(Long id, Agenda agenda, LocalDateTime startTime, LocalDateTime endTime) {
-		this.id = id;
-		this.agenda = agenda;
-		this.startTime = startTime;
-		this.endTime = endTime;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Agenda getAgenda() {
-		return agenda;
-	}
-
-	public void setAgenda(Agenda agenda) {
-		this.agenda = agenda;
-	}
-
-	public LocalDateTime getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(LocalDateTime startTime) {
-		this.startTime = startTime;
-	}
-
-	public LocalDateTime getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(LocalDateTime endTime) {
-		this.endTime = endTime;
-	}
-
-	public Set<Vote> getVotes() {
-		return votes;
-	}
-
-	public void setVotes(Set<Vote> votes) {
-		this.votes = votes;
-	}
 }
 
 

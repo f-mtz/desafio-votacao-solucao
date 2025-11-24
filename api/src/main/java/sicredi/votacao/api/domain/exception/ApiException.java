@@ -1,6 +1,7 @@
-package sicredi.votacao.api.service.exception;
+package sicredi.votacao.api.domain.exception;
 
 import org.springframework.http.HttpStatus;
+
 
 public class ApiException extends RuntimeException {
 	private final HttpStatus status;
