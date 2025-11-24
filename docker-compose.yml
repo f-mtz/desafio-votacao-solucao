@@ -1,5 +1,25 @@
 version: "3.9"
 services:
+  oracle:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: oracle-xe
+    ports:
+      - "15210:1521"
+    environment:
+      - ORACLE_PASSWORD=StrongPwd123
+      - APP_USER=VOTACAO_DB
+      - APP_USER_PASSWORD=StrongPwd123
+      # ORACLE_DATABASE padrão é XEPDB1; pode ser alterado com a var abaixo
+      # - ORACLE_DATABASE=XEPDB1
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'SELECT 1 FROM dual;' | sqlplus -s system/$${ORACLE_PASSWORD}@localhost/XEPDB1 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
   api:
     build:
       context: ./api
@@ -9,8 +29,17 @@ services:
     environment:
       - JAVA_TOOL_OPTIONS=-Xms256m -Xmx512m
       - APP_BASE_URL=${APP_BASE_URL:-http://localhost:8080}
+      # Override das propriedades do Spring para usar o Oracle no Docker
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@//oracle:1521/XEPDB1
+      - SPRING_DATASOURCE_USERNAME=VOTACAO_DB
+      - SPRING_DATASOURCE_PASSWORD=StrongPwd123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.OracleDialect
     volumes:
       - h2-data:/app/data
+    depends_on:
+      oracle:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 10s
@@ -30,6 +59,8 @@ services:
 
 volumes:
   h2-data:
+    driver: local
+  oracle-data:
     driver: local
 
 
