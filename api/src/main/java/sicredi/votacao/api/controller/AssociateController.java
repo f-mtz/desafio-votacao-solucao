@@ -18,7 +18,6 @@ import sicredi.votacao.api.integration.AssociateStatus;
 import sicredi.votacao.api.integration.AssociateValidatorClient;
 import sicredi.votacao.api.domain.exception.ApiException;
 
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/associates")
