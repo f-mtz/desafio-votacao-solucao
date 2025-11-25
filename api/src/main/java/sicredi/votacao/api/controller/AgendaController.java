@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import sicredi.votacao.api.service.AgendaService;
 import sicredi.votacao.api.domain.dto.agenda.CreateAgendaRequest;
 import sicredi.votacao.api.domain.dto.agenda.CreateAgendaResponse;
 import sicredi.votacao.api.domain.dto.agenda.ResultResponse;
 
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/agendas")
@@ -40,7 +42,8 @@ public class AgendaController {
 					content = @Content(schema = @Schema(implementation = CreateAgendaResponse.class)))
 	)
 	@PostMapping
-	public ResponseEntity<CreateAgendaResponse> create(
+    @ResponseStatus(HttpStatus.CREATED)
+	public CreateAgendaResponse create(
 			@Validated @RequestBody
 			@io.swagger.v3.oas.annotations.parameters.RequestBody(
 					description = "Dados da pauta",
@@ -50,7 +53,7 @@ public class AgendaController {
 							examples = @ExampleObject(value = "{\"title\":\"Assembleia Geral 2026\",\"description\":\"Votação do orçamento anual\"}")
 					)
 			) CreateAgendaRequest request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(agendaService.createAgenda(request));
+		return agendaService.createAgenda(request);
 	}
 
 	@Operation(
@@ -59,9 +62,10 @@ public class AgendaController {
 			responses = @ApiResponse(responseCode = "200", description = "Resultado",
 					content = @Content(schema = @Schema(implementation = ResultResponse.class)))
 	)
+	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("/{agendaId}/resultado")
-	public ResponseEntity<ResultResponse> result(@PathVariable Long agendaId) {
-		return ResponseEntity.ok(agendaService.result(agendaId));
+	public ResultResponse result(@PathVariable Long agendaId) {
+		return agendaService.result(agendaId);
 	}
 
 	@Operation(
@@ -74,6 +78,20 @@ public class AgendaController {
 	public ResponseEntity<CreateAgendaResponse> finish(@PathVariable Long agendaId) {
 		return ResponseEntity.ok(agendaService.finishAgenda(agendaId));
 	}
+
+	@Operation(
+			summary = "Lista pautas em andamento",
+			description = "Retorna todas as pautas com status IN_PROGRESS",
+			responses = @ApiResponse(responseCode = "200", description = "Lista de pautas",
+					content = @Content(schema = @Schema(implementation = CreateAgendaResponse.class)))
+	)
+	@ResponseStatus(HttpStatus.OK)
+	@GetMapping("/in-progress")
+	public List<CreateAgendaResponse> listInProgress() {
+		return agendaService.listInProgress();
+	}
+	
+	
 
 }
 
