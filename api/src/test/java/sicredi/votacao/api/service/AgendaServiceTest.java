@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -14,11 +13,14 @@ import sicredi.votacao.api.domain.AgendaStatus;
 import sicredi.votacao.api.domain.Vote;
 import sicredi.votacao.api.domain.VoteType;
 import sicredi.votacao.api.domain.VotingSession;
+import sicredi.votacao.api.domain.dto.agenda.CreateAgendaRequest;
+import sicredi.votacao.api.domain.dto.sessao.OpenSessionRequest;
+import sicredi.votacao.api.domain.dto.voto.VoteRequest;
 import sicredi.votacao.api.repository.AgendaRepository;
 import sicredi.votacao.api.repository.VoteRepository;
 import sicredi.votacao.api.repository.VotingSessionRepository;
-import sicredi.votacao.api.service.dto.AgendaDtos;
-import sicredi.votacao.api.service.exception.ApiException;
+
+import sicredi.votacao.api.domain.exception.ApiException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -38,6 +40,8 @@ class AgendaServiceTest {
 	@Mock AssociateValidatorService validatorService;
 
 	@InjectMocks AgendaService agendaService;
+	@InjectMocks VotoService votoService;
+	@InjectMocks VotingSessionService sessionService;
 
 	Agenda agenda;
 
@@ -59,7 +63,7 @@ class AgendaServiceTest {
 			return a;
 		});
 
-		var res = agendaService.createAgenda(new AgendaDtos.CreateAgendaRequest("Titulo", "Descricao"));
+		var res = agendaService.createAgenda(new CreateAgendaRequest("Titulo", "Descricao"));
 		assertThat(res.id()).isEqualTo(10L);
 		assertThat(res.status()).isEqualTo(AgendaStatus.NOT_STARTED.name());
 		verify(agendaRepository).save(any(Agenda.class));
@@ -75,7 +79,7 @@ class AgendaServiceTest {
 			return s;
 		});
 
-		var res = agendaService.openSession(new AgendaDtos.OpenSessionRequest(1L, null));
+		var res = sessionService.openSession(new OpenSessionRequest(1L, null));
 		assertThat(res.sessionId()).isEqualTo(5L);
 		assertThat(agenda.getStatus()).isEqualTo(AgendaStatus.IN_PROGRESS);
 	}
@@ -85,7 +89,7 @@ class AgendaServiceTest {
 	void openSession_alreadyExists() {
 		agenda.setVotingSession(new VotingSession());
 		given(agendaRepository.findById(1L)).willReturn(Optional.of(agenda));
-		assertThatThrownBy(() -> agendaService.openSession(new AgendaDtos.OpenSessionRequest(1L, 60L)))
+		assertThatThrownBy(() -> sessionService.openSession(new OpenSessionRequest(1L, 60L)))
 				.isInstanceOf(ApiException.class)
 				.hasMessageContaining("Sessão já aberta");
 	}
@@ -106,7 +110,7 @@ class AgendaServiceTest {
 			return v;
 		});
 
-		var res = agendaService.vote(new AgendaDtos.VoteRequest(2L, "123", "SIM"));
+		var res = votoService.vote(new VoteRequest(2L, "123", "SIM"));
 		assertThat(res.voteId()).isEqualTo(99L);
 		verify(voteRepository).save(any(Vote.class));
 	}
@@ -121,7 +125,7 @@ class AgendaServiceTest {
 		given(votingSessionRepository.findById(2L)).willReturn(Optional.of(session));
 		given(voteRepository.existsByVotingSession_IdAndAssociateId(2L, "123")).willReturn(true);
 
-		assertThatThrownBy(() -> agendaService.vote(new AgendaDtos.VoteRequest(2L, "123", "SIM")))
+		assertThatThrownBy(() -> votoService.vote(new VoteRequest(2L, "123", "SIM")))
 				.isInstanceOf(ApiException.class)
 				.matches(ex -> ((ApiException) ex).getStatus() == HttpStatus.CONFLICT);
 	}
