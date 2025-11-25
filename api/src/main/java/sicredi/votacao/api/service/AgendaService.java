@@ -17,6 +17,8 @@ import sicredi.votacao.api.domain.dto.agenda.ResultResponse;
 import sicredi.votacao.api.domain.exception.ApiException;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AgendaService {
@@ -40,6 +42,19 @@ public class AgendaService {
 		agenda = agendaRepository.save(agenda);
 		log.info("createAgenda OK id={}", agenda.getId());
 		return new CreateAgendaResponse(agenda.getId(), agenda.getTitle(), agenda.getDescription(), agenda.getStatus().name());
+	}
+
+	@Transactional(readOnly = true)
+	public List<CreateAgendaResponse> listInProgress() {
+		log.info("listInProgress agendas");
+		return agendaRepository.findByStatus(AgendaStatus.IN_PROGRESS)
+				.stream()
+				.map(agenda -> new CreateAgendaResponse(
+						agenda.getId(),
+						agenda.getTitle(),
+						agenda.getDescription(),
+						agenda.getStatus().name()))
+				.collect(Collectors.toList());
 	}
 
 
